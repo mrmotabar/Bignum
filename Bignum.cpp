@@ -1,241 +1,260 @@
 /*mohammadreza motabar*/
 #include <bits/stdc++.h>
-#define ll long long
 using namespace std;
 class Bignum
 {
 public:
-	static const int MAX_N = 1e3;
-	static const int MOD = 10;
-	ll d[MAX_N], sizd = 0;
-	Bignum(ll x = 0)
+	static const int MAX_Length = 1e3;
+	static const int Base = 10;
+	long Digit[MAX_Length], Length = 0;
+
+	// Initializing the value of the variable
+	Bignum(long Value = 0)
 	{
-		memset(d, 0, sizeof d);
-		sizd = 0;
-		d[sizd] = x;
+		memset(this->Digit, 0, sizeof this->Digit);
+		Length = 0;
+		this->Digit[Length] = Value;
 		relax();
 	}
-	Bignum(const Bignum &b)
+	Bignum(const Bignum &Value)
 	{
-		memset(d, 0, sizeof d);
-		sizd = b.sizd;
-		for (int i = 0; i <= sizd; i++)
+		memset(this->Digit, 0, sizeof this->Digit);
+		Length = Value.Length;
+		for (int i = 0; i <= Length; i++)
 		{
-			d[i] = b.d[i];
+			Digit[i] = Value.Digit[i];
 		}
 	}
+
+	// Normalizing the input bignum to the assigned Base
 	void relax()
 	{
-		for (int i = 0; i <= sizd; i++)
+		for (int i = 0; i <= Length; i++)
 		{
-			d[i + 1] += d[i] / MOD;
-			d[i] %= MOD;
-			if (d[sizd + 1] > 0)
+			Digit[i + 1] += Digit[i] / Base;
+			Digit[i] %= Base;
+			if (Digit[Length + 1] > 0)
 			{
-				sizd++;
+				Length++;
 			}
 		}
-		while (sizd && !d[sizd])
+		while (Length && !Digit[Length])
 		{
-			sizd--;
+			Length--;
 		}
 	}
-	inline Bignum operator+(const Bignum &b) const
+	// Overloading + 
+	inline Bignum operator+(const Bignum &Addend) const
 	{
 		Bignum ret = 0;
-		int dah_bar_yek = 0;
-		for (int i = 0; i <= max(b.sizd, sizd); i++)
+		int Carry = 0;
+		for (int i = 0; i <= max(Addend.Length, Length); i++)
 		{
-			ret.d[i] = d[i] + b.d[i] + dah_bar_yek;
-			dah_bar_yek = ret.d[i] / MOD;
-			ret.d[i] = ret.d[i] % MOD;
+			ret.Digit[i] = Digit[i] + Addend.Digit[i] + Carry;
+			Carry = ret.Digit[i] / Base;
+			ret.Digit[i] = ret.Digit[i] % Base;
 		}
-		ret.sizd = max(sizd, b.sizd);
-		if (dah_bar_yek > 0)
+		ret.Length = max(Length, Addend.Length);
+		if (Carry > 0)
 		{
-			ret.sizd++;
-			ret.d[ret.sizd] = dah_bar_yek;
+			ret.Length++;
+			ret.Digit[ret.Length] = Carry;
 		}
 		return ret;
 	}
-	inline Bignum operator+=(const Bignum &b)
+	// Overloading +=
+	inline Bignum operator+=(const Bignum &Addend)
 	{
-		return *this = *this + b;
+		return *this = *this + Addend;
 	}
-	inline Bignum operator+(const int &b) const
+	// Overloading + for semmation of a Bignum with an Integer
+	inline Bignum operator+(const int &Addend) const
 	{
 		Bignum ret = *this;
-		ret.d[0] += b;
+		ret.Digit[0] += Addend;
 		ret.relax();
 		return ret;
 	}
-	inline Bignum operator+=(const int &b)
+	// Overloading += for semmation of a Bignum with an Integer
+	inline Bignum operator+=(const int &Addend)
 	{
-		return *this = *this + b;
+		return *this = *this + Addend;
 	}
-	inline Bignum operator*(const Bignum &b) const
+	// Overloading *
+	inline Bignum operator*(const Bignum &Multiplicand) const
 	{
 		Bignum ret = 0;
-		ret.sizd = sizd + b.sizd;
-		for (int i = 0; i <= sizd; i++)
+		ret.Length = Length + Multiplicand.Length;
+		for (int i = 0; i <= Length; i++)
 		{
-			for (int j = 0; j <= b.sizd; j++)
+			for (int j = 0; j <= Multiplicand.Length; j++)
 			{
-				ret.d[i + j] += d[i] * b.d[j];
+				ret.Digit[i + j] += Digit[i] * Multiplicand.Digit[j];
 			}
 		}
 		ret.relax();
 		return ret;
 	}
-	inline Bignum operator*=(const Bignum &b)
+	// Overloading *=
+	inline Bignum operator*=(const Bignum &Multiplicand)
 	{
-		return *this = *this * b;
+		return *this = *this * Multiplicand;
 	}
-	inline Bignum operator*(const int &b) const
+	// Overloading * for multiplication of a Bignum with an Integer
+	inline Bignum operator*(const int &Multiplicand) const
 	{
-		Bignum ret = 0, g = b;
-		ret.sizd = sizd + g.sizd;
-		for (int i = 0; i <= sizd; i++)
+		Bignum ret = 0, temp = Multiplicand;
+		ret.Length = Length + temp.Length;
+		for (int i = 0; i <= Length; i++)
 		{
-			for (int j = 0; j <= g.sizd; j++)
+			for (int j = 0; j <= temp.Length; j++)
 			{
-				ret.d[i + j] += d[i] * g.d[j];
+				ret.Digit[i + j] += Digit[i] * temp.Digit[j];
 			}
 		}
 		ret.relax();
 		return ret;
 	}
-	inline Bignum operator*=(const int &b)
+	// Overloading *= for multiplication of a Bignum with an Integer
+	inline Bignum operator*=(const int &Multiplicand)
 	{
-		return *this = *this * b;
+		return *this = *this * Multiplicand;
 	}
-	inline Bignum operator-(const Bignum &b)
+	// Overloading -
+	inline Bignum operator-(const Bignum &Subtrahend)
 	{
 		Bignum ret = 0;
-		for (int i = 0; i <= max(b.sizd, sizd); i++)
+		for (int i = 0; i <= max(Subtrahend.Length, Length); i++)
 		{
-			if (d[i] >= b.d[i])
+			if (Digit[i] >= Subtrahend.Digit[i])
 			{
-				ret.d[i] = d[i] - b.d[i];
+				ret.Digit[i] = Digit[i] - Subtrahend.Digit[i];
 			}
 			else
 			{
-				d[i] += 10;
-				d[i + 1]--;
-				ret.d[i] = d[i] - b.d[i];
+				Digit[i] += Base;
+				Digit[i + 1]--;
+				ret.Digit[i] = Digit[i] - Subtrahend.Digit[i];
 			}
 		}
-		ret.sizd = max(sizd, b.sizd);
+		ret.Length = max(Length, Subtrahend.Length);
 		ret.relax();
 		return ret;
 	}
-	inline Bignum operator-=(const Bignum &b)
+	// Overloading -=
+	inline Bignum operator-=(const Bignum &Subtrahend)
 	{
-		return *this = *this - b;
+		return *this = *this - Subtrahend;
 	}
+	// Overloading ++
 	inline Bignum &operator++()
 	{
-		(*this).d[0] += 1;
+		(*this).Digit[0] += 1;
 		(*this).relax();
 		return *this;
 	}
+	// Overloading --
 	inline Bignum operator--()
 	{
 		int i = 0;
-		while (d[i] == 0)
+		while (Digit[i] == 0)
 		{
 			i++;
-			if (d[i] > 0)
+			if (Digit[i] > 0)
 			{
-				d[i]--;
+				Digit[i]--;
 				for (int j = i - 1; j >= 1; j--)
 				{
-					d[j] = 9;
+					Digit[j] = Base - 1;
 				}
-				d[0] = 10;
-				d[0]--;
+				Digit[0] = Base;
+				Digit[0]--;
 			}
 		}
 		return *this;
 	}
-	inline Bignum operator^(const int x)
+	// Overloading ^
+	inline Bignum operator^(const int Exponent)
 	{
-		int y = x;
+		int temp = Exponent;
 		Bignum r = *this;
 		Bignum ret = 1;
-		while (y > 0)
+		while (temp > 0)
 		{
-			if (y % 2 == 1)
+			if (temp % 2 == 1)
 			{
 				ret *= r;
 			}
 			r *= r;
-			y /= 2;
+			temp /= 2;
 		}
 		return ret;
 	}
-	inline Bignum operator/(Bignum &b)
+	// Overloading /
+	inline Bignum operator/(Bignum &Divisor)
 	{
 		Bignum ret = 0;
-		string s = " ";
-		for (int i = sizd; i >= 0; i--)
+		string temp = " ";
+		for (int i = Length; i >= 0; i--)
 		{
-			for (int j = ret.sizd + 1; j >= 1; j--)
+			for (int j = ret.Length + 1; j >= 1; j--)
 			{
-				ret.d[j] = ret.d[j - 1];
+				ret.Digit[j] = ret.Digit[j - 1];
 			}
-			ret.d[0] = d[i];
-			if (i < sizd)
+			ret.Digit[0] = Digit[i];
+			if (i < Length)
 			{
-				ret.sizd++;
+				ret.Length++;
 			}
 			ret.relax();
-			for (int j = 1; j <= 10; j++)
+			for (int j = 1; j <= Base; j++)
 			{
 				Bignum h = j;
-				if (ret < h * b)
+				if (ret < h * Divisor)
 				{
-					ret -= ((h - 1) * b);
+					ret -= ((h - 1) * Divisor);
 					ret.relax();
-					s += char(j - 1 + int('0'));
+					temp += char(j - 1 + int('0'));
 					break;
 				}
 			}
 		}
-		Bignum jav = 0;
-		for (int i = s.size() - 1; i >= 1; i--)
+		Bignum result = 0;
+		for (int i = temp.size() - 1; i >= 1; i--)
 		{
-			jav.d[s.size() - 1 - i] = int(s[i]) - int('0');
+			result.Digit[temp.size() - 1 - i] = int(temp[i]) - int('0');
 		}
-		jav.sizd = s.size();
-		jav.relax();
-		return jav;
+		result.Length = temp.size();
+		result.relax();
+		return result;
 	}
-	inline Bignum operator/=(Bignum &b)
+	// Overloading /=
+	inline Bignum operator/=(Bignum &Divisor)
 	{
-		return *this = *this / b;
+		return *this = *this / Divisor;
 	}
-	inline Bignum operator%(Bignum &b)
+	// Overloading %
+	inline Bignum operator%(Bignum &Modulo)
 	{
 		Bignum ret = 0;
-		for (int i = sizd; i >= 0; i--)
+		for (int i = Length; i >= 0; i--)
 		{
-			for (int j = ret.sizd + 1; j >= 1; j--)
+			for (int j = ret.Length + 1; j >= 1; j--)
 			{
-				ret.d[j] = ret.d[j - 1];
+				ret.Digit[j] = ret.Digit[j - 1];
 			}
-			ret.d[0] = d[i];
-			if (i < sizd)
+			ret.Digit[0] = Digit[i];
+			if (i < Length)
 			{
-				ret.sizd++;
+				ret.Length++;
 			}
 			ret.relax();
-			for (int j = 1; j <= 10; j++)
+			for (int j = 1; j <= Base; j++)
 			{
 				Bignum h = j;
-				if (ret < h * b)
+				if (ret < h * Modulo)
 				{
-					ret -= ((h - 1) * b);
+					ret -= ((h - 1) * Modulo);
 					ret.relax();
 					break;
 				}
@@ -243,93 +262,90 @@ public:
 		}
 		return ret;
 	}
+	// Defining square root function for Bignum
 	inline Bignum sqr()
 	{
 		Bignum ret = 0;
-		Bignum kh = 0;
+		Bignum temp = 0;
 		int t = 0;
-		for (int i = sizd; i >= 0; i--)
+		for (int i = Length; i >= 0; i--)
 		{
-			if ((sizd + 1) % 2 == 1 && i == sizd)
+			if ((Length + 1) % 2 == 1 && i == Length)
 			{
-				ret = d[sizd];
+				temp = Digit[Length];
 			}
-			else if ((sizd + 1) % 2 == 0 && i == sizd)
+			else if ((Length + 1) % 2 == 0 && i == Length)
 			{
-				ret = d[sizd] * 10 + d[sizd - 1];
+				temp = Digit[Length] * Base + Digit[Length - 1];
 				i--;
 			}
 			else
 			{
-				for (int j = ret.sizd + 2; j >= 2; j--)
+				for (int j = temp.Length + 2; j >= 2; j--)
 				{
-					ret.d[j] = ret.d[j - 2];
+					temp.Digit[j] = temp.Digit[j - 2];
 				}
-				ret.d[0] = d[i - 1];
-				ret.d[1] = d[i];
-				ret.sizd += 2;
+				temp.Digit[0] = Digit[i - 1];
+				temp.Digit[1] = Digit[i];
+				temp.Length += 2;
 				i--;
 			}
 			if (t > 0)
 			{
-				for (int h = 1; h <= 10; h++)
+				for (int j = 1; j <= Base; j++)
 				{
-					Bignum g = (kh * 20);
-					g += h;
-					g *= h;
-					if (g > ret)
+
+					if (((ret * 20) + j) * j > temp)
 					{
-						Bignum z = (kh * 20);
-						z += (h - 1);
-						z *= (h - 1);
-						ret -= z;
-						ret.relax();
-						for (int j = kh.sizd + 1; j >= 1; j--)
+						temp -= ((ret * 20) + (j - 1)) * (j - 1);
+						temp.relax();
+						for (int k = ret.Length + 1; k >= 1; k--)
 						{
-							kh.d[j] = kh.d[j - 1];
+							ret.Digit[k] = ret.Digit[k - 1];
 						}
-						kh.d[0] = h - 1;
-						kh.sizd++;
+						ret.Digit[0] = j - 1;
+						ret.Length++;
 						break;
 					}
 				}
 			}
 			else
 			{
-				for (int h = 1; h <= 10; h++)
+				for (int j = 1; j <= Base; j++)
 				{
-					Bignum l = h;
-					if (l * l > ret)
+					Bignum jSquare = j * j;
+					if (jSquare > temp)
 					{
-						kh = (h - 1);
-						ret -= (h - 1) * (h - 1);
+						ret = (j - 1);
+						temp -= (j - 1) * (j - 1);
 						break;
 					}
 				}
 				t++;
 			}
 		}
-		return kh;
+		return ret;
 	}
-	inline bool operator>(const Bignum &b) const
+	// Overloading >
+	inline bool operator>(const Bignum &Value) const
 	{
-		if (sizd > b.sizd)
+		if (Length > Value.Length)
 		{
 			return 1;
 		}
-		else if (sizd < b.sizd)
+		else if (Length < Value.Length)
 		{
 			return 0;
 		}
 		else
 		{
-			for (int i = b.sizd; i >= 0; i--)
+			for (int i = Value.Length; i >= 0; i--)
 			{
-				if (d[i] > b.d[i])
+				if (Digit[i] > Value.Digit[i])
 				{
 					return 1;
 				}
-				if (d[i] < b.d[i])
+				if (Digit[i] < Value.Digit[i])
 				{
 					return 0;
 				}
@@ -337,25 +353,26 @@ public:
 			return 0;
 		}
 	}
-	inline bool operator>=(const Bignum &b) const
+	// Overloading >=
+	inline bool operator>=(const Bignum &Value) const
 	{
-		if (sizd > b.sizd)
+		if (Length > Value.Length)
 		{
 			return 1;
 		}
-		else if (sizd < b.sizd)
+		else if (Length < Value.Length)
 		{
 			return 0;
 		}
 		else
 		{
-			for (int i = sizd; i >= 0; i--)
+			for (int i = Length; i >= 0; i--)
 			{
-				if (d[i] > b.d[i])
+				if (Digit[i] > Value.Digit[i])
 				{
 					return 1;
 				}
-				if (d[i] < b.d[i])
+				if (Digit[i] < Value.Digit[i])
 				{
 					return 0;
 				}
@@ -363,33 +380,36 @@ public:
 			return 1;
 		}
 	}
-	inline bool operator<=(const Bignum &b) const
+	// Overloading <=
+	inline bool operator<=(const Bignum &Value) const
 	{
-		if (b >= *this)
+		if (Value >= *this)
 		{
 			return 1;
 		}
 		return 0;
 	}
-	inline bool operator<(const Bignum &b) const
+	// Overloading <
+	inline bool operator<(const Bignum &Value) const
 	{
-		if (b > *this)
+		if (Value > *this)
 		{
 			return 1;
 		}
 		return 0;
 	}
-	inline bool operator==(const Bignum &b) const
+	// Overloading ==
+	inline bool operator==(const Bignum &Value) const
 	{
-		if (sizd != b.sizd)
+		if (Length != Value.Length)
 		{
 			return 0;
 		}
 		else
 		{
-			for (int i = b.sizd; i >= 0; i--)
+			for (int i = Value.Length; i >= 0; i--)
 			{
-				if (d[i] != b.d[i])
+				if (Digit[i] != Value.Digit[i])
 				{
 					return 0;
 				}
@@ -397,11 +417,12 @@ public:
 			return 1;
 		}
 	}
+	// Printing a Bignum
 	void show()
 	{
-		for (int i = sizd; i >= 0; i--)
+		for (int i = Length; i >= 0; i--)
 		{
-			cout << d[i];
+			cout << Digit[i];
 		}
 	}
 };
@@ -411,7 +432,7 @@ int main()
 	cin.tie(0);
 	cout.tie(0);
 	Bignum a;
-	ll b;
+	long b;
 	cin >> b;
 	a = b;
 	a = a.sqr();
