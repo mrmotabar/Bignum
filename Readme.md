@@ -1,3 +1,5 @@
+# Bignum Data Type
+
 In C++ programming language, there is a restriction on the size of the integers you can define and work. The largest integer you can represent in C++ is 2^64 in long data type.
 
 You may need to work with much larger integers. Because I've been required to use large integers frequently, I decided to write a class for them so that it would not be necessary to implement it every time.
